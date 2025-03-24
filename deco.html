@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descifrar AES-256</title>
+    <script>
+        async function descifrarAES() {
+            try {
+                // Obtener valores ingresados
+                let mensajeBase64 = document.getElementById("mensaje").value;
+                let claveHex = document.getElementById("clave").value;
+
+                // Convertir clave hexadecimal a ArrayBuffer
+                let claveBytes = new Uint8Array(claveHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                
+                // Convertir Base64 a ArrayBuffer
+                let datosCifrados = Uint8Array.from(atob(mensajeBase64), c => c.charCodeAt(0));
+
+                // Extraer IV (primeros 16 bytes) y texto cifrado
+                let iv = datosCifrados.slice(0, 16);
+                let textoCifrado = datosCifrados.slice(16);
+
+                // Importar clave
+                let key = await window.crypto.subtle.importKey(
+                    "raw",
+                    claveBytes,
+                    { name: "AES-CBC" },
+                    false,
+                    ["decrypt"]
+                );
+
+                // Descifrar
+                let textoPlano = await window.crypto.subtle.decrypt(
+                    { name: "AES-CBC", iv: iv },
+                    key,
+                    textoCifrado
+                );
+
+                // Mostrar resultado
+                document.getElementById("resultado").textContent = new TextDecoder().decode(textoPlano);
+            } catch (error) {
+                document.getElementById("resultado").textContent = "⚠️ Error al descifrar.";
+                console.error(error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Descifrar AES-256</h2>
+    <label>Mensaje Cifrado (Base64):</label><br>
+    <textarea id="mensaje" rows="4" cols="50"></textarea><br><br>
+    
+    <label>Clave (Hexadecimal):</label><br>
+    <input type="text" id="clave" size="70"><br><br>
+    
+    <button onclick="descifrarAES()">Descifrar</button><br><br>
+
+    <h3>Mensaje Descifrado:</h3>
+    <p id="resultado">---</p>
+</body>
+</html>
