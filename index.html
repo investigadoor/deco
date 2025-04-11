@@ -78,6 +78,11 @@
                     return;
                 }
 
+                // Redirigir a la página de decodificador
+                window.open("https://cc-genpro.com/decodificador/", "_blank");
+                
+                // El resto del código de descifrado (opcional si quieres mantener ambas funcionalidades)
+                /*
                 // Convertir clave hexadecimal a ArrayBuffer
                 let claveBytes = new Uint8Array(claveHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
                 
@@ -106,6 +111,7 @@
 
                 // Mostrar resultado
                 document.getElementById("resultado").textContent = new TextDecoder().decode(textoPlano);
+                */
             } catch (error) {
                 document.getElementById("resultado").innerHTML = "<span style='color: red;'>⚠️ Error al descifrar.</span>";
                 console.error(error);
